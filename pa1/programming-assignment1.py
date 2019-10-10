@@ -45,7 +45,6 @@ def compute_softmax_loss(W, X, y, reg):
     - dW: the gradient for W.
     """
  
-
     #############################################################################
     # TODO: Compute the softmax loss and its gradient.                          #
     # Store the loss in loss and the gradient in dW. If you are not careful     #
@@ -53,25 +52,37 @@ def compute_softmax_loss(W, X, y, reg):
     # regularization!                                                           #
     #############################################################################
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    # 初始化
+    loss = 0.0
+    dW = np.zeros_like(W)
+
+    num_train, dim = X.shape    # num_train is the N
+    f = X.dot(W)                # X点乘W获得预测值
+
+    f_max = np.reshape(np.max(f, axis=1), (num_train, 1))  
+    # 找到最大值减去，防止接下来的操作出现数值偏差
+
+    num_class = W.shape[1]
+    scores = np.dot(X[i], W)
+    scores_max = np.reshape(np.max(scores,axis =1),(num_train,1))
+    #公式
+    prob = np.exp(f - f_max) / np.sum(np.exp(f - f_max), axis=1), keepdims=True)
+    y_trueClass = np.zeros_like(prob)
+    y_trueClass[range(num_train), y] = 1.0    
+
+    # softmax loss: NLL/N +  0.5 *reg* L2 regularization
+    loss += -np.sum(y_trueClass * np.log(prob)) / num_train + 0.5 * reg * np.sum(W * W)
+    dW += -np.dot(X.T, y_trueClass - prob) / num_train + reg * W
+    return loss, dW
+   
 
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
 
     return loss, dW
+
+
 
 def predict(W, X):
     """
